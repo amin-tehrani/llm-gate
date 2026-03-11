@@ -30,7 +30,7 @@ To get up and running, clone the repository and build from the source:
 
 ```bash
 # Clone the repository
-git clone https://https://github.com/amin-tehrani/llm-gate.git
+git clone https://github.com/amin-tehrani/llm-gate.git
 cd llm-gate
 
 # Build and install to your PATH
@@ -113,7 +113,7 @@ Run `llm-gate list` to view the comprehensive list. Highlights include:
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are always welcome!
-Feel free to check the [issues page](https://https://github.com/amin-tehrani/llm-gate/issues). If you want to add a new provider, just append it to the `registry.go` array with the designated configuration parameters.
+Feel free to check the [issues page](https://github.com/amin-tehrani/llm-gate/issues). If you want to add a new provider, just append it to the `registry.go` array with the designated configuration parameters.
 
 ## 📄 License
 This architecture is licensed under **[MIT](LICENSE)**. 
