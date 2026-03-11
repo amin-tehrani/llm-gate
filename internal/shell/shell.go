@@ -32,12 +32,12 @@ _llm_gate() {
     local cmd="${1:-}"
     if [ "$cmd" = "activate" ] || [ "$cmd" = "deactivate" ]; then
         eval "$(LLM_GATE_WRAPPER=1 %s "$@")"
-        eval $(_llm_gate current)
+        eval "$(_llm_gate current)"
     else
         %s "$@"
     fi
 }
-eval $(_llm_gate current)
+eval "$(_llm_gate current)"
 alias llm-gate='_llm_gate'
 `, binPath, binPath)
 }

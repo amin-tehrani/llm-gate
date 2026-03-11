@@ -44,7 +44,7 @@ Since child processes cannot modify the parent shell's environment variables, `l
 # Add this line to the end of your shell rc file:
 eval "$(llm-gate shell-init)"
 ```
-Restart your terminal, and `llm-gate activate` will now work seamlessly!
+Restart your terminal, and `llm-gate activate` will now work seamlessly! Furthermore, opening new terminal tabs or splits will automatically pull your persisted configuration from `llm-gate current` and keep your API keys active across sessions.
 
 ---
 
@@ -80,7 +80,8 @@ llm-gate activate openai
 | ------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `help`                    | Standard help & usage command list.                                                                    |
 | `list`                    | Show all 30+ fully supported LLM providers and their mapped aliases.                                   |
-| `current`                 | Print a clean table of all providers and their localized activation statuses.                          |
+| `status`                  | Print a clean table of all providers and their localized configuration statuses.                       |
+| `current`                 | Echoes the active environment variable `export` and `unset` statements tailored for your shell.        |
 | `auth <provider>`         | Launch the interactive authentication wizard, guiding you with browser URLs.                           |
 | `set <provider> <key>`    | Save an API key directly without interactive prompts.                                                  |
 | `update <provider> <key>` | Update/overwrite an API key (alias for `set`).                                                         |

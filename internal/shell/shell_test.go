@@ -32,7 +32,7 @@ func TestShellInitContainsFunction(t *testing.T) {
 	if !strings.Contains(s, "LLM_GATE_WRAPPER=1") {
 		t.Error("ShellInit() does not mention LLM_GATE_WRAPPER=1")
 	}
-	if !strings.Contains(s, "eval") {
-		t.Error("ShellInit() does not mention eval")
+	if !strings.Contains(s, `eval "$(_llm_gate current)"`) {
+		t.Error("ShellInit() does not mention eval \"$(_llm_gate current)\"")
 	}
 }

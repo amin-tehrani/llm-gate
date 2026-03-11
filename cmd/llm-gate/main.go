@@ -440,19 +440,17 @@ var currentCmd = &cobra.Command{
 		}
 
 		for name, pc := range cfg.Providers {
-			v := ""
-			if pc.Active {
-				v = pc.APIKey
-			}
-
 			p, err := provider.MustLookup(name)
 			if err != nil {
 				return err
 			}
 
-			fmt.Printf("export %s=\"%s\"\n", p.EnvVar, v)
+			if pc.Active {
+				fmt.Printf("export %s=%q\n", p.EnvVar, pc.APIKey)
+			} else {
+				fmt.Printf("unset %s\n", p.EnvVar)
+			}
 		}
-		fmt.Println()
 		return nil
 	},
 }
