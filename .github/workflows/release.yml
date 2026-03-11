@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Build & Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        goos: [linux, darwin, windows]
+        goarch: [amd64, arm64]
+        exclude:
+          - goos: windows
+            goarch: arm64
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Build and Archive
+        run: |
+          mkdir -p build
+          
+          # Build target
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o build/llm-gate ./cmd/llm-gate/
+          
+          cd build
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            mv llm-gate llm-gate.exe
+            zip llm-gate_${{ matrix.goos }}_${{ matrix.goarch }}.zip llm-gate.exe
+          else
+            tar -czvf llm-gate_${{ matrix.goos }}_${{ matrix.goarch }}.tar.gz llm-gate
+          fi
+
+      - name: Release Note Generation
+        id: generate_release_notes
+        if: matrix.goos == 'linux' && matrix.goarch == 'amd64'
+        run: |
+          echo "Release ${{ github.ref_name }}" > release_notes.txt
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/llm-gate_*.tar.gz
+            build/llm-gate_*.zip
+          generate_release_notes: true
