@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strings"
@@ -8,11 +9,11 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 
+	"github.com/amintehrani/llm-gate/internal/browser"
 	"github.com/amintehrani/llm-gate/internal/check"
 	"github.com/amintehrani/llm-gate/internal/config"
 	"github.com/amintehrani/llm-gate/internal/provider"
 	"github.com/amintehrani/llm-gate/internal/shell"
-	"golang.org/x/term"
 )
 
 var version = "0.1.0"
@@ -53,14 +54,38 @@ var authCmd = &cobra.Command{
 
 		bold := color.New(color.Bold)
 		bold.Printf("  Authenticating with %s\n", p.DisplayName)
+
+		if p.APIKeyURL != "" {
+			dim := color.New(color.FgHiBlack)
+			fmt.Printf("  To get an API key, visit: ")
+			color.New(color.FgCyan, color.Underline).Printf("%s\n", p.APIKeyURL)
+			dim.Printf("  Press Enter to open this URL in your browser, or type 'n' to skip: ")
+
+			var b [1]byte
+			os.Stdin.Read(b[:])
+			if b[0] == '\n' || b[0] == '\r' || b[0] == 'y' || b[0] == 'Y' {
+				if err := browser.Open(p.APIKeyURL); err != nil {
+					dim.Printf("  Could not open browser: %v\n", err)
+				}
+			} else {
+				// Consume the rest of the line if they typed 'n' + Enter
+				if b[0] != '\n' && b[0] != '\r' {
+					var discard [1024]byte
+					os.Stdin.Read(discard[:])
+				}
+			}
+			fmt.Println()
+		}
+
 		fmt.Printf("  Enter your API key: ")
 
-		keyBytes, err := term.ReadPassword(int(os.Stdin.Fd()))
+		reader := bufio.NewReader(os.Stdin)
+		keyStr, err := reader.ReadString('\n')
 		fmt.Println()
 		if err != nil {
 			return fmt.Errorf("reading key: %w", err)
 		}
-		key := strings.TrimSpace(string(keyBytes))
+		key := strings.TrimSpace(keyStr)
 		if key == "" {
 			return fmt.Errorf("API key cannot be empty")
 		}

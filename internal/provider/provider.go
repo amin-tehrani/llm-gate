@@ -18,5 +18,6 @@ type Provider struct {
 	AuthType      AuthType
 	BaseURL       string // API base URL
 	CheckEndpoint string // Relative or absolute URL for a lightweight health check
+	APIKeyURL     string // URL to the page where the user can create an API key
 	Tags          []string
 }
