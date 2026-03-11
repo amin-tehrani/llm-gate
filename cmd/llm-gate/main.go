@@ -161,6 +161,13 @@ var activateCmd = &cobra.Command{
 	Args:              cobra.ExactArgs(1),
 	ValidArgsFunction: providerCompletion,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if os.Getenv("LLM_GATE_WRAPPER") != "1" {
+			return fmt.Errorf("shell integration not active.\n\n" +
+				"  To use activate/deactivate, add this to your .zshrc or .bashrc:\n" +
+				"  eval \"$(llm-gate shell-init)\"\n\n" +
+				"  Then restart your terminal.")
+		}
+
 		p, err := provider.MustLookup(args[0])
 		if err != nil {
 			return err
@@ -210,6 +217,13 @@ var deactivateCmd = &cobra.Command{
 	Args:              cobra.ExactArgs(1),
 	ValidArgsFunction: providerCompletion,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if os.Getenv("LLM_GATE_WRAPPER") != "1" {
+			return fmt.Errorf("shell integration not active.\n\n" +
+				"  To use activate/deactivate, add this to your .zshrc or .bashrc:\n" +
+				"  eval \"$(llm-gate shell-init)\"\n\n" +
+				"  Then restart your terminal.")
+		}
+
 		p, err := provider.MustLookup(args[0])
 		if err != nil {
 			return err
@@ -296,10 +310,10 @@ var checkCmd = &cobra.Command{
 	},
 }
 
-// ── current ───────────────────────────────────────────────────────────────────
+// ── status ───────────────────────────────────────────────────────────────────
 
-var currentCmd = &cobra.Command{
-	Use:   "current",
+var statusCmd = &cobra.Command{
+	Use:   "status",
 	Short: "Show all providers with their status",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := config.Load()
@@ -414,6 +428,35 @@ var shellInitCmd = &cobra.Command{
 	},
 }
 
+// ── current (info) ─────────────────────────────────────────────────────────────
+
+var currentCmd = &cobra.Command{
+	Use:   "current",
+	Short: "Current env vars",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		cfg, err := config.Load()
+		if err != nil {
+			return err
+		}
+
+		for name, pc := range cfg.Providers {
+			v := ""
+			if pc.Active {
+				v = pc.APIKey
+			}
+
+			p, err := provider.MustLookup(name)
+			if err != nil {
+				return err
+			}
+
+			fmt.Printf("export %s=\"%s\"\n", p.EnvVar, v)
+		}
+		fmt.Println()
+		return nil
+	},
+}
+
 // ── config (info) ─────────────────────────────────────────────────────────────
 
 var configCmd = &cobra.Command{
@@ -466,6 +509,7 @@ func init() {
 		deactivateCmd,
 		checkCmd,
 		currentCmd,
+		statusCmd,
 		listCmd,
 		removeCmd,
 		shellInitCmd,

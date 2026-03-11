@@ -1,86 +1,118 @@
-# llm-gate
+<div align="center">
+  <h1>🚪 LLM Gate</h1>
+  <p><strong>The Ultimate Control Plane for your LLM API Keys</strong></p>
+  
+  <p>
+    <a href="https://golang.org/doc/install"><img src="https://img.shields.io/badge/go-%2300ADD8.svg?style=flat-square&logo=go&logoColor=white" alt="Go"></a>
+    <a href="https://github.com/spf13/cobra"><img src="https://img.shields.io/badge/CLI-Cobra-blue?style=flat-square" alt="Cobra"></a>
+    <a href="#"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=flat-square" alt="License"></a>
+  </p>
+</div>
 
-> A central hub CLI for managing multiple LLM provider API keys.
+<br/>
 
-Store, activate, deactivate, and check connectivity for 30+ LLM providers from a single tool.
+Working with multiple LLM providers means juggling dozens of API keys, environment variables, and authentication flows. **`llm-gate`** brings order to the chaos. It serves as a unified, central hub CLI to efficiently store, manage, verify, and seamlessly inject API keys for over **30 LLM providers**.
 
-## Install
+## ✨ Features
+
+- **🌐 30+ Supported Providers**: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Code Llama, xAI (Grok), and many more.
+- **🛡️ Secure Storage**: Keys are permanently stored in `~/.config/llm-gate/config.yaml` using strict `0600` file permissions.
+- **🚀 Seamless Shell Integration**: Activate or deactivate any provider's environment variables directly within your current terminal session via `eval`.
+- **✅ Real-Time Connectivity**: Ping any network to verify if your API credentials are active and healthy, retrieving latencies and specific JSON error payloads if failures occur.
+- **🧭 Interactive Onboarding**: Provides interactive, guided flows that will automatically open the exact API-key generation URLs in your browser for standard providers.
+- **🔄 Smart Aliasing**: Resolves popular names (e.g. `grok` -> `xai`, `github-copilot` -> `copilot`).
+
+---
+
+## 📦 Installation
+
+To get up and running, clone the repository and build from the source:
 
 ```bash
-# Build from source
-make build
+# Clone the repository
+git clone https://github.com/amintehrani/llm-gate.git
+cd llm-gate
 
-# Install to PATH
+# Build and install to your PATH
 make install
 ```
 
-## Quick Start
+### 🔌 Enable Shell Integration (Required)
+Since child processes cannot modify the parent shell's environment variables, `llm-gate` uses an `eval` wrapper function. You must add the following snippet to your shell configuration (`~/.zshrc`, `~/.bashrc`, or `~/.config/fish/config.fish`):
 
 ```bash
-# Set up shell integration (add to .bashrc / .zshrc)
+# Add this line to the end of your shell rc file:
 eval "$(llm-gate shell-init)"
+```
+Restart your terminal, and `llm-gate activate` will now work seamlessly!
 
-# Store an API key
-llm-gate auth openai      # interactive (hidden input)
-llm-gate set openai sk-... # direct
+---
 
-# Activate — exports the env var
-llm-gate activate openai
-# → export OPENAI_API_KEY="sk-..."
+## 🛠️ Quick Start
 
-# Check connectivity
+#### 1. Add your first provider
+Start by authenticating an LLM provider. The interactive CLI will prompt you and even open your browser directly to the provider's API Key generation page:
+```bash
+llm-gate auth openai
+```
+
+*(Alternatively, you can skip the interactive prompt by running: `llm-gate set openai sk-...`)*
+
+#### 2. Check your connection
+Make sure your key works:
+```bash
 llm-gate check openai
-llm-gate check --all
-
-# View all providers and status
-llm-gate current
-
-# Deactivate — unsets the env var
-llm-gate deactivate openai
-
-# Remove a stored key
-llm-gate remove openai
+# Output: ✓ OpenAI connected (1338ms)
 ```
 
-## Commands
-
-| Command                   | Description                                        |
-| ------------------------- | -------------------------------------------------- |
-| `auth <provider>`         | Interactive API key prompt with connectivity check |
-| `set <provider> <key>`    | Store an API key directly                          |
-| `update <provider> <key>` | Update an API key (alias for set)                  |
-| `activate <provider>`     | Export the env var for this provider               |
-| `deactivate <provider>`   | Unset the env var                                  |
-| `check [provider]`        | Test connectivity (`--all` for all configured)     |
-| `current`                 | Show all providers with active/configured status   |
-| `list`                    | List all supported providers and aliases           |
-| `remove <provider>`       | Remove a stored key                                |
-| `shell-init`              | Output shell wrapper function                      |
-| `config`                  | Show config file path and info                     |
-
-## Shell Integration
-
-Since child processes can't modify the parent shell's environment, `activate` and `deactivate` print shell statements that need to be `eval`'d. The `shell-init` command provides a wrapper that handles this automatically:
-
+#### 3. Activate the key
+Export the API key natively into your shell's current session:
 ```bash
-# Add to your .bashrc or .zshrc:
-eval "$(llm-gate shell-init)"
+llm-gate activate openai
+# Your shell now has $OPENAI_API_KEY exported perfectly!
 ```
 
-After that, `llm-gate activate` and `llm-gate deactivate` work seamlessly.
+---
 
-## Supported Providers
+## 🕹️ Command Reference
 
-Run `llm-gate list` to see all 30+ supported providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, DeepSeek, xAI, Together AI, and many more.
+| Command                   | Description                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `help`                    | Standard help & usage command list.                                                                    |
+| `list`                    | Show all 30+ fully supported LLM providers and their mapped aliases.                                   |
+| `current`                 | Print a clean table of all providers and their localized activation statuses.                          |
+| `auth <provider>`         | Launch the interactive authentication wizard, guiding you with browser URLs.                           |
+| `set <provider> <key>`    | Save an API key directly without interactive prompts.                                                  |
+| `update <provider> <key>` | Update/overwrite an API key (alias for `set`).                                                         |
+| `activate <provider>`     | Export the environment variable mapping specifically for this vendor into your active CLI environment. |
+| `deactivate <provider>`   | Unset the exported environment variable.                                                               |
+| `check [provider]`        | Test provider health. Optionally pass `--all` or `-a` to ping all customized providers sequentially.   |
+| `remove <provider>`       | Delete a stored key locally.                                                                           |
+| `config`                  | Echo out the location strings for where configurations exist locally.                                  |
+| `completion <shell>`      | Generate the autocompletion script (bash, zsh, fish, powershell).                                      |
 
-## Config
+---
 
-Keys are stored in `~/.config/llm-gate/config.yaml` with `0600` permissions.
+## 🤖 Supported Providers
 
-```bash
-llm-gate config  # show config path and info
-```
+Run `llm-gate list` to view the comprehensive list. Highlights include:
 
-## License
+- **OpenAI** (`openai`, `openai-codex`)
+- **Anthropic** (`anthropic`)
+- **Google Gemini** (`gemini`, aliases: `google`)
+- **Meta/Local** (`ollama`)
+- **xAI/Grok** (`xai`, aliases: `grok`)
+- **Cloud Infrastructure Models** (`cloudflare`, `vercel`, `doubao`, `qwen`, `qianfan`, `bedrock`)
+- **High-Performance inference hubs** (`groq`, `together`, `fireworks`, `openrouter`)
+- **Asian Leading Models** (`moonshot`, `kimi-code`, `glm`, `zai`, `minimax`, `deepseek`)
+- **Others** (`mistral`, `synthetic`, `opencode`, `novita`, `perplexity`, `cohere`, `copilot`)
 
-MIT
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are always welcome!
+Feel free to check the [issues page](https://github.com/amintehrani/llm-gate/issues). If you want to add a new provider, just append it to the `registry.go` array with the designated configuration parameters.
+
+## 📄 License
+This architecture is licensed under **[MIT](LICENSE)**. 
