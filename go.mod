@@ -1,4 +1,4 @@
-module github.com/amintehrani/llm-gate
+module https: //github.com/amin-tehrani/llm-gate
 
 go 1.25.7
 

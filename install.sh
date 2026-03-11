@@ -2,7 +2,7 @@
 
 set -e
 
-REPO="amintehrani/llm-gate"
+REPO="amin-tehrani/llm-gate"
 BINARY_NAME="llm-gate"
 
 # Detect OS

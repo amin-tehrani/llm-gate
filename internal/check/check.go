@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/amintehrani/llm-gate/internal/provider"
+	"https://github.com/amin-tehrani/llm-gate/internal/provider"
 )
 
 // Result holds the outcome of a connectivity check.

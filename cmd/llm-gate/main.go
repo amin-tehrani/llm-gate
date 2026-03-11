@@ -9,11 +9,11 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 
-	"github.com/amintehrani/llm-gate/internal/browser"
-	"github.com/amintehrani/llm-gate/internal/check"
-	"github.com/amintehrani/llm-gate/internal/config"
-	"github.com/amintehrani/llm-gate/internal/provider"
-	"github.com/amintehrani/llm-gate/internal/shell"
+	"https://github.com/amin-tehrani/llm-gate/internal/browser"
+	"https://github.com/amin-tehrani/llm-gate/internal/check"
+	"https://github.com/amin-tehrani/llm-gate/internal/config"
+	"https://github.com/amin-tehrani/llm-gate/internal/provider"
+	"https://github.com/amin-tehrani/llm-gate/internal/shell"
 )
 
 var version = "0.1.0"
