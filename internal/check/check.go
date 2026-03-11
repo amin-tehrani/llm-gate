@@ -2,7 +2,9 @@ package check
 
 import (
 	"fmt"
+	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/amintehrani/llm-gate/internal/provider"
@@ -69,5 +71,19 @@ func Check(p *provider.Provider, apiKey string) Result {
 		return Result{Provider: p, OK: true, Latency: latency}
 	}
 
-	return Result{Provider: p, OK: false, Latency: latency, Error: fmt.Sprintf("HTTP %d", resp.StatusCode)}
+	bodyBytes, _ := io.ReadAll(resp.Body)
+	errMsg := fmt.Sprintf("HTTP %d", resp.StatusCode)
+	if len(bodyBytes) > 0 {
+		// Truncate the body if it's too long
+		bodyStr := string(bodyBytes)
+		// Clean up newlines for CLI output
+		bodyStr = strings.ReplaceAll(bodyStr, "\n", " ")
+		bodyStr = strings.ReplaceAll(bodyStr, "\r", "")
+		if len(bodyStr) > 200 {
+			bodyStr = bodyStr[:200] + "..."
+		}
+		errMsg += fmt.Sprintf(": %s", bodyStr)
+	}
+
+	return Result{Provider: p, OK: false, Latency: latency, Error: errMsg}
 }

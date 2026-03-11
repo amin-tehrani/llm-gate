@@ -27,7 +27,7 @@ func init() {
 			Name: "openai", DisplayName: "OpenAI",
 			EnvVar: "OPENAI_API_KEY", AuthType: AuthAPIKey,
 			BaseURL: "https://api.openai.com", CheckEndpoint: "/v1/models",
-			APIKeyURL: "https://platform.openai.com/api-keys",
+			APIKeyURL: "https://platform.openai.com/account/api-keys",
 		},
 		{
 			Name: "openai-codex", DisplayName: "OpenAI Codex (OAuth)",
